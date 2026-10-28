@@ -1,53 +1,28 @@
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 html,
 body {
-  margin: 0;
-  min-height: 100%;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
 }
 
 body {
-  min-height: 100vh;
-  min-height: 100dvh;
-  overflow: hidden;
-}
-
-.page {
-  position: relative;
-  isolation: isolate;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   height: 100dvh;
-  overflow: hidden;
-  background: #08090d;
 }
 
-.background-video {
-  position: absolute;
-  z-index: -3;
-  inset: 0;
+#backgroundVideo {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
-  background: #08090d;
-}
-
-[hidden] {
-  display: none !important;
-}
-
-/* Desktop and laptop */
-@media (min-width: 768px) {
-  .background-video {
-    object-fit: cover;
-    object-position: center;
-  }
-}
-
-/* Mobile phones */
-@media (max-width: 767px) {
-  .background-video {
-    object-fit: cover;
-    object-position: center;
-  }
+  object-fit: contain;
+  background: #000;
 }
