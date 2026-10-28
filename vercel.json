@@ -3,7 +3,7 @@
   "trailingSlash": false,
   "headers": [
     {
-      "source": "/coming-soon.mp4",
+      "source": "/coming-soon-portrait-4k.mp4",
       "headers": [
         { "key": "Content-Type", "value": "video/mp4" },
         { "key": "Cache-Control", "value": "public, max-age=3600" }
