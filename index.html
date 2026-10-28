@@ -1,135 +1,50 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#08090d">
-  <meta name="description" content="Something special is coming soon.">
+  <meta name="theme-color" content="#000000">
   <title>Coming Soon</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <main class="page">
-    <video
-      id="backgroundVideo"
-      class="background-video"
-      autoplay
-      muted
-      loop
-      playsinline
-      webkit-playsinline
-      preload="auto"
-      aria-label="Coming soon background video">
-    </video>
-
-    <div class="shade" aria-hidden="true"></div>
-
-    <section class="content">
-      <span class="eyebrow">
-        <span class="pulse"></span>
-        SOMETHING NEW IS ON THE WAY
-      </span>
-
-      <h1>Coming<br><span>Soon.</span></h1>
-
-      <p>We’re getting everything ready.<br>Stay tuned for the reveal.</p>
-
-      <div class="rule"></div>
-      <span class="small">A NEW EXPERIENCE IS ALMOST HERE</span>
-    </section>
-
-    <button class="sound-toggle" id="soundToggle" type="button">
-      Enable sound <span aria-hidden="true">↗</span>
-    </button>
-
-    <span class="corner-mark" aria-hidden="true">CS<span>®</span></span>
-
-    <button class="retry-button" id="retryButton" type="button" hidden>
-      Play video
-    </button>
-  </main>
+  <video
+    id="backgroundVideo"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="auto">
+  </video>
 
   <script>
     const video = document.getElementById("backgroundVideo");
-    const soundButton = document.getElementById("soundToggle");
-    const retryButton = document.getElementById("retryButton");
+    const mobileScreen = window.matchMedia("(max-width: 767px)");
 
-    // Change this breakpoint if you want to adjust the mobile width.
-    const screenQuery = window.matchMedia("(max-width: 767px)");
-
-    let currentVideo = "";
-
-    function updateVideo() {
-      const file = screenQuery.matches
+    function selectVideo() {
+      const file = mobileScreen.matches
         ? "/mobile-coming-soon.mp4"
         : "/desktop-coming-soon.mp4";
 
-      // Don't restart playback unnecessarily.
-      if (currentVideo === file) return;
+      if (video.dataset.currentFile === file) return;
 
-      currentVideo = file;
-
-      video.pause();
+      video.dataset.currentFile = file;
       video.src = file;
       video.load();
 
-      video.play()
-        .then(() => {
-          retryButton.hidden = true;
-        })
-        .catch(() => {
-          // Some browsers require a tap before playback.
-          retryButton.hidden = false;
-        });
+      video.play().catch(() => {
+        // Autoplay may require user interaction in some browsers.
+      });
     }
 
-    video.muted = true;
-    video.loop = true;
+    selectVideo();
 
-    // Choose the correct video on initial load.
-    updateVideo();
-
-    // Switch video when moving between mobile and desktop sizes.
-    if (screenQuery.addEventListener) {
-      screenQuery.addEventListener("change", updateVideo);
+    if (mobileScreen.addEventListener) {
+      mobileScreen.addEventListener("change", selectVideo);
     } else {
-      screenQuery.addListener(updateVideo);
+      mobileScreen.addListener(selectVideo);
     }
-
-    retryButton.addEventListener("click", () => {
-      video.play()
-        .then(() => {
-          retryButton.hidden = true;
-        })
-        .catch(() => {});
-    });
-
-    soundButton.addEventListener("click", async () => {
-      video.muted = !video.muted;
-
-      soundButton.innerHTML = video.muted
-        ? 'Enable sound <span aria-hidden="true">↗</span>'
-        : 'Mute sound <span aria-hidden="true">↗</span>';
-
-      soundButton.setAttribute(
-        "aria-pressed",
-        String(!video.muted)
-      );
-
-      if (video.paused) {
-        try {
-          await video.play();
-          retryButton.hidden = true;
-        } catch {
-          retryButton.hidden = false;
-        }
-      }
-    });
-
-    video.addEventListener("error", () => {
-      retryButton.hidden = false;
-    });
   </script>
 </body>
 </html>
