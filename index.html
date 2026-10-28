@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -10,61 +11,125 @@
 </head>
 <body>
   <main class="page">
-    <video id="backgroundVideo" class="background-video" autoplay muted loop playsinline webkit-playsinline preload="auto">
-      <source src="/coming-soon-portrait-4k.mp4" type="video/mp4">
-      Your browser does not support HTML video.
+    <video
+      id="backgroundVideo"
+      class="background-video"
+      autoplay
+      muted
+      loop
+      playsinline
+      webkit-playsinline
+      preload="auto"
+      aria-label="Coming soon background video">
     </video>
+
     <div class="shade" aria-hidden="true"></div>
+
     <section class="content">
-      <span class="eyebrow"><span class="pulse"></span> SOMETHING NEW IS ON THE WAY</span>
+      <span class="eyebrow">
+        <span class="pulse"></span>
+        SOMETHING NEW IS ON THE WAY
+      </span>
+
       <h1>Coming<br><span>Soon.</span></h1>
+
       <p>We’re getting everything ready.<br>Stay tuned for the reveal.</p>
+
       <div class="rule"></div>
       <span class="small">A NEW EXPERIENCE IS ALMOST HERE</span>
     </section>
-    <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false">Enable sound <span aria-hidden="true">↗</span></button>
-    <span class="corner-mark" aria-hidden="true">CS<span>®</span></span>
-    <div class="video-error" id="videoError" hidden>
-      The video could not load. Please check that the MP4 file is uploaded in the repository root.
-    </div>
-    <button class="retry-button" id="retryButton" type="button" hidden>Play video</button>
-  </main>
-  <script>
-    const video = document.getElementById('backgroundVideo');
-    const soundToggle = document.getElementById('soundToggle');
-    const videoError = document.getElementById('videoError');
-    const retryButton = document.getElementById('retryButton');
 
-    async function startVideo() {
-      video.muted = true;
-      try {
-        await video.play();
-        videoError.hidden = true;
-        retryButton.hidden = true;
-      } catch (error) {
-        // Some mobile browsers block autoplay until the visitor interacts.
-        retryButton.hidden = false;
-      }
+    <button class="sound-toggle" id="soundToggle" type="button">
+      Enable sound <span aria-hidden="true">↗</span>
+    </button>
+
+    <span class="corner-mark" aria-hidden="true">CS<span>®</span></span>
+
+    <button class="retry-button" id="retryButton" type="button" hidden>
+      Play video
+    </button>
+  </main>
+
+  <script>
+    const video = document.getElementById("backgroundVideo");
+    const soundButton = document.getElementById("soundToggle");
+    const retryButton = document.getElementById("retryButton");
+
+    // Change this breakpoint if you want to adjust the mobile width.
+    const screenQuery = window.matchMedia("(max-width: 767px)");
+
+    let currentVideo = "";
+
+    function updateVideo() {
+      const file = screenQuery.matches
+        ? "/mobile-coming-soon.mp4"
+        : "/desktop-coming-soon.mp4";
+
+      // Don't restart playback unnecessarily.
+      if (currentVideo === file) return;
+
+      currentVideo = file;
+
+      video.pause();
+      video.src = file;
+      video.load();
+
+      video.play()
+        .then(() => {
+          retryButton.hidden = true;
+        })
+        .catch(() => {
+          // Some browsers require a tap before playback.
+          retryButton.hidden = false;
+        });
     }
 
-    video.addEventListener('error', () => {
-      videoError.hidden = false;
-      retryButton.hidden = true;
+    video.muted = true;
+    video.loop = true;
+
+    // Choose the correct video on initial load.
+    updateVideo();
+
+    // Switch video when moving between mobile and desktop sizes.
+    if (screenQuery.addEventListener) {
+      screenQuery.addEventListener("change", updateVideo);
+    } else {
+      screenQuery.addListener(updateVideo);
+    }
+
+    retryButton.addEventListener("click", () => {
+      video.play()
+        .then(() => {
+          retryButton.hidden = true;
+        })
+        .catch(() => {});
     });
-    video.addEventListener('ended', () => {
-      video.currentTime = 0;
-      startVideo();
-    });
-    retryButton.addEventListener('click', startVideo);
-    soundToggle.addEventListener('click', async () => {
+
+    soundButton.addEventListener("click", async () => {
       video.muted = !video.muted;
-      soundToggle.setAttribute('aria-pressed', String(!video.muted));
-      soundToggle.innerHTML = video.muted
+
+      soundButton.innerHTML = video.muted
         ? 'Enable sound <span aria-hidden="true">↗</span>'
         : 'Mute sound <span aria-hidden="true">↗</span>';
-      if (video.paused) await startVideo();
+
+      soundButton.setAttribute(
+        "aria-pressed",
+        String(!video.muted)
+      );
+
+      if (video.paused) {
+        try {
+          await video.play();
+          retryButton.hidden = true;
+        } catch {
+          retryButton.hidden = false;
+        }
+      }
     });
-    startVideo();
+
+    video.addEventListener("error", () => {
+      retryButton.hidden = false;
+    });
   </script>
 </body>
 </html>
