@@ -3,48 +3,80 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#000000">
   <title>Coming Soon</title>
-  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+
+    video {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      background: #000;
+    }
+  </style>
 </head>
+
 <body>
   <video
-    id="backgroundVideo"
+    id="screenVideo"
     autoplay
     muted
     loop
     playsinline
+    webkit-playsinline
     preload="auto">
   </video>
 
   <script>
-    const video = document.getElementById("backgroundVideo");
-    const mobileScreen = window.matchMedia("(max-width: 767px)");
+    const video = document.getElementById("screenVideo");
 
-    function selectVideo() {
-      const file = mobileScreen.matches
+    const mobileQuery = window.matchMedia("(max-width: 767px)");
+
+    function setVideo() {
+      const filename = mobileQuery.matches
         ? "/mobile-coming-soon.mp4"
         : "/desktop-coming-soon.mp4";
 
-      if (video.dataset.currentFile === file) return;
+      if (video.dataset.filename === filename) return;
 
-      video.dataset.currentFile = file;
-      video.src = file;
+      video.dataset.filename = filename;
+      video.pause();
+      video.src = filename;
       video.load();
 
       video.play().catch(() => {
-        // Autoplay may require user interaction in some browsers.
+        // Retry when the browser permits playback.
       });
     }
 
-    selectVideo();
+    video.addEventListener("error", () => {
+      console.error(
+        "Video failed to load:",
+        video.currentSrc,
+        video.error
+      );
+    });
 
-    if (mobileScreen.addEventListener) {
-      mobileScreen.addEventListener("change", selectVideo);
-    } else {
-      mobileScreen.addListener(selectVideo);
-    }
+    setVideo();
+    mobileQuery.addEventListener("change", setVideo);
   </script>
 </body>
 </html>
