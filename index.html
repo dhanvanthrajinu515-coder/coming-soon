@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#08090d" />
+  <meta name="description" content="Something special is coming soon." />
+  <title>Coming Soon</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main class="page">
+    <video class="background-video" autoplay muted loop playsinline preload="auto" aria-label="Coming soon background video">
+      <source src="/coming-soon-portrait-4k.mp4" type="video/mp4" />
+      Your browser does not support HTML video.
+    </video>
+    <div class="shade" aria-hidden="true"></div>
+    <section class="content" aria-label="Coming soon announcement">
+      <span class="eyebrow"><span class="pulse"></span> SOMETHING NEW IS ON THE WAY</span>
+      <h1>Coming<br /><span>Soon.</span></h1>
+      <p>We’re getting everything ready.<br />Stay tuned for the reveal.</p>
+      <div class="rule"></div>
+      <span class="small">A NEW EXPERIENCE IS ALMOST HERE</span>
+    </section>
+    <button class="sound-toggle" type="button" aria-pressed="false" aria-label="Turn video sound on">Enable sound <span aria-hidden="true">↗</span></button>
+    <span class="corner-mark" aria-hidden="true">CS<span>®</span></span>
+  </main>
+  <script>
+    const video = document.querySelector('.background-video');
+    const soundButton = document.querySelector('.sound-toggle');
+    soundButton.addEventListener('click', () => {
+      video.muted = !video.muted;
+      soundButton.setAttribute('aria-pressed', String(!video.muted));
+      soundButton.innerHTML = video.muted
+        ? 'Enable sound <span aria-hidden="true">↗</span>'
+        : 'Mute sound <span aria-hidden="true">↗</span>';
+    });
+    // Autoplay policies require muted playback; retry muted if the browser blocks it.
+    video.play().catch(() => { video.muted = true; });
+  </script>
+</body>
+</html>
